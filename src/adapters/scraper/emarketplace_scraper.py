@@ -3,15 +3,17 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from ...domain.models import Listing
+from ...infrastructure.config import settings
 import os
 
-BASE_URL = os.getenv("BASE_URL", "https://www.emarketplace.state.pa.us/Procurement.aspx")
+BASE_URL = settings.base_url
 HEADERS = {"User-Agent": os.getenv("USER_AGENT", "contract-scraper/1.0")}
 GRID_ID = "ctl00$MainBody$gdvSearchData"
 GRID_ID_HTML = "ctl00_MainBody_gdvSearchData"
 
 
 class EMarketplaceScraper:
+
     def _parse_listings_from_html(self, html: str) -> List[Listing]:
         soup = BeautifulSoup(html, "lxml")
         table = soup.find("table", id=GRID_ID_HTML)

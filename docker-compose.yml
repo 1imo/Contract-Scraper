@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    container_name: contract-scraper
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    env_file:
+      - .env
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Optionally override the OVPN config path (must be inside the container)
+      # - OVPN_CONFIG=/app/data/Windscribe-Atlanta-Mountain.ovpn
+      # Ensure compose passes through these if present in .env
+      - OVPN_AUTH_USERNAME
+      - OVPN_AUTH_PASSWORD
+    volumes:
+      - ./:/app
+    # Run in the default network; all traffic from the container routes via the VPN tunnel
+    restart: unless-stopped

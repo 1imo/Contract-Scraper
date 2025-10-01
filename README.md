@@ -29,6 +29,21 @@ python run.py
 python -m src.main
 ```
 
+### Run with Docker + OpenVPN (container-only tunnel)
+```bash
+# Build the image
+docker compose build
+
+# Start the container (tunnel comes up first, then app runs)
+docker compose up -d
+
+# View logs
+docker logs -f contract-scraper
+```
+Notes:
+- Ensure your `.ovpn` file is present at `data/Windscribe-Atlanta-Mountain.ovpn` or set `OVPN_CONFIG` env to another path inside the container.
+- The container needs `NET_ADMIN` and `/dev/net/tun` which are configured in `docker-compose.yml`.
+- If your `.ovpn` requires credentials, set `OVPN_AUTH_USERNAME` and `OVPN_AUTH_PASSWORD` in environment (container uses a secure auth file automatically).
 ### Environment variables (.env)
 - DISCORD_TOKEN: Bot token
 - DISCORD_GUILD_ID: Server ID (enable Developer Mode → right‑click server → Copy Server ID)
@@ -65,6 +80,13 @@ Do not commit your real keys. `.env` is already gitignored.
 ### Discord setup tips
 - Invite your bot to the server with permissions to View Channel and Send Messages in the target channel.
 - Developer Mode: User Settings → Advanced → toggle Developer Mode. Then right‑click to copy IDs.
+
+### VPN Setup
+This app provides a Dockerized OpenVPN tunnel so the container's outbound traffic goes through the VPN automatically. No username/password support is included.
+
+- The container requires `NET_ADMIN` and access to `/dev/net/tun`.
+- Provide an `.ovpn` config inside `data/` (already includes `Windscribe-Atlanta-Mountain.ovpn`).
+- All network requests from the app will route via the VPN interface inside the container.
 
 ### Troubleshooting
 - No messages sent: ensure DISCORD_* vars are correct and the bot can see the channel.
